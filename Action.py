@@ -67,6 +67,7 @@ class Action:
 					e["ASK_PRICE"].append(float(tokens[i * 4 + 3]))
 					e["ASK_QUANTITY"].append(float(tokens[i*4 + 4]))
 		elif (tokens[0] == "BID_OUT"):
+			print tokens[0]
 			pass
 		elif (tokens[0] == "ASK_OUT"):
 			pass
@@ -99,6 +100,7 @@ class Action:
 
 	def run(self):
 		self.checkParams()
+		print self._command
 		self._got = clientpy2.run("Good_Biddies", "asdfghjkl", self._command)
 		return self.parse(self._got)
 

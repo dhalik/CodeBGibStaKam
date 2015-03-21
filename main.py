@@ -15,22 +15,19 @@ def runOrder(ticker):
 	val = Action(ActionType.ORDERS, ticker).run()
 	transTypes = "BID"
 	tickers = val["TICKER"]
-	prices= val["BID_PRICE"]
+	bidPrices= val["BID_PRICE"]
 	quantitys= val["BID_QUANTITY"]
-	for transType,ticker, price, quantity in zip(transTypes,tickers, prices, quantitys):
+	for transType,ticker, price, quantity in zip(transTypes,tickers, bidPrices, quantitys):
 		SQLService.insertOrder(transType, period, ticker, price, quantity)
-
-	bestBid = max(prices)
 
 	transTypes = "ASK"
 	tickers = val["TICKER"]
-	prices= val["ASK_PRICE"]
+	askPrices= val["ASK_PRICE"]
 	quantitys= val["ASK_QUANTITY"]
-	for transType,ticker, price, quantity in zip(transTypes,tickers, prices, quantitys):
+	for transType,ticker, price, quantity in zip(transTypes,tickers, askPrices, quantitys):
 		SQLService.insertOrder(transType, period, ticker, price, quantity)
 
-	bestAsk = max(prices)
-	return (bestBid, bestAsk)
+	return (bidPrices, askPrices)
 
 def batchOrders():
 	for name in TICKERS:
@@ -49,17 +46,34 @@ def runSecurities():
 		SQLService.insertStock(period, tick, nw, dr, vol)
 		if (tick in stockList):
 			spread = runOrder(tick)
-			midMarket = spread[0] + (spread[0] - spread[1])/2
-			print "Midmarket is " + str(midMarket)
-			stockList[tick].addTick('',midMarket,dr,'',vol, '');
+			if (len(spread[0]) > 0 and len(spread[1]) > 0):
+				minVal = min(spread[1])
+				midMarket = max(spread[0]) + (max(spread[0]) - minVal)/2
+				stockList[tick].addTick(midMarket,'',dr,'',vol,'',spread[0], spread[1]);
+				buy = stockList[tick].bidSlopeChange
+				print buy
+				if (buy[1] and buy[0] > 0.001):
+					price = minVal
+					Action(ActionType.BID, tick + " " + str(price) + " 2" ).run()
+				#sell = stockList[tick].askSlopeChange
+				#print sell
 
 def createStocks():
 	global stockList;
 	GOOG_TICKER = "GOOG"
 	stockList[GOOG_TICKER] = Stock(GOOG_TICKER);
+	GOOG_TICKER = "TSLA"
+	stockList[GOOG_TICKER] = Stock(GOOG_TICKER);
+	GOOG_TICKER = "EA"
+	stockList[GOOG_TICKER] = Stock(GOOG_TICKER);
+	GOOG_TICKER = "XOM"
+	stockList[GOOG_TICKER] = Stock(GOOG_TICKER);
+	GOOG_TICKER = "MSFT"
+	stockList[GOOG_TICKER] = Stock(GOOG_TICKER);
 
 if (__name__ == "__main__"):
 	SQLService.connectToDB()
+	#SubscriberService.subscribeToUpdates()
 	createStocks()
 	while (True):
 		if period == 0:
@@ -67,14 +81,11 @@ if (__name__ == "__main__"):
 			cursor = SQLService.getUniqueTickers()
 			for name in cursor.fetchall():
 				TICKERS.append(name[0])
-			print(TICKERS)
 			batchOrders()
 		else:
-			SQLService.closeDBConnection()
-			break
-		# 	runSecurities()
+			runSecurities()
 		# 	batchOrders()
 		time.sleep(1)
 		period = period + 1
-
+	SQLService.closeDBConnection()
 

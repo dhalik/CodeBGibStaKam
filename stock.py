@@ -13,24 +13,25 @@ import numpy as np
 ##isVolUniform(); returns T/F if volatility is Uniform
 ##bidSlopeChange; returns (a,b) where a is current bid slope and b is a bool if slope changed
 
-class Stock:    
+class Stock:
 	def __init__(self, ticker):
 		self.ticker = ticker
+		self.MAPeriod = 7;
 		self.outstandingShares=0
 		self.shares = 0
 		self.initialDiv = 0
 		self.volDistribution = ''
-	
-		#SlopeChange = (a,b) where a is the current bid slope and b is a bool determining if the slope changed 
+
+		#SlopeChange = (a,b) where a is the current bid slope and b is a bool determining if the slope changed
 		self.bidSlopeChange = (0,False)
 		self.askSlopeChange = (0,False)
-		
+
 		self.bidAvg=[]
 		self.askAvg=[]
 
 		self.bidSlope = []
 		self.askSlope = []
-		
+
 
 		self.PurchaseHistory = []
 		self.Earnings = []
@@ -58,11 +59,11 @@ class Stock:
 			self.askAvg.append(sum(ask)/len(ask))
 
 	def addBidAskSlope(self):
-		if (len(self.bidAvg) >=3):
-			slope = (self.bidAvg[-1] - self.bidAvg[-3])/3
+		if (len(self.bidAvg) >= self.MAPeriod):
+			slope = (self.bidAvg[-1] - self.bidAvg[-self.MAPeriod])/self.MAPeriod
 			self.bidSlope.append(slope)
-		if (len(self.askAvg) >=3):
-			slope = (self.askAvg[-1] - self.askAvg[-3])/3
+		if (len(self.askAvg) >= self.MAPeriod):
+			slope = (self.askAvg[-1] - self.askAvg[-self.MAPeriod])/self.MAPeriod
 			self.askSlope.append(slope)
 
 	def updateSlopeTuples(self):
@@ -76,11 +77,11 @@ class Stock:
 			if ((self.askSlope[-1] > 0 and self.askSlope[-2] < 0) or (self.askSlope[-1] < 0 and self.askSlope[-2] > 0)):
 				askChange = True
 			self.askSlopeChange = (self.askSlope[-1], askChange)
-			
+
 	#num:price, earnings, divRatio, MVPS, vol, div
 	#list: bid, ask
 	def addTick(self, price, earnings, divRatio, MVPS, vol, div, bid, ask):
-		if price != '': 
+		if price != '':
 			self.Price.append(price);
 		if earnings != '':
 			self.Earnings.append(earnings);
@@ -97,11 +98,11 @@ class Stock:
 			bid.remove(min(bid))
 		if (len(ask) !=0):
 			ask.remove(max(ask))
-			
-			
+
+
 		self.addBidAskPrice(bid,ask)
 		self.addBidAskSlope()
-		
+
 		self.updateSlopeTuples()
 
 	#Assuming we have div calculated
