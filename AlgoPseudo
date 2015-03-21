@@ -1,0 +1,10 @@
+
+Start of Contest
+
+start of period
+	if period == 1
+		 Wait a couple of ticks(3-5) to allow others to take the hit for buying the largest spread first
+	else
+		Run the securities command and record data into DataBase and Memory as Stock Class
+		Run algorithm 
+	
