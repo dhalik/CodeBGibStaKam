@@ -2,8 +2,9 @@ from Action import Action
 import SQLService
 import time
 import SubscriberService
+import string
 from ActionType import *
-import stock
+#import stock
 
 period = 0;
 AAPL_TICKER = 'AAPL'
@@ -18,7 +19,9 @@ TWTR_TICKER = 'TWTR'
 XOM_TICKER = 'XOM'
 stockList = {}
 
-def getBidAsk(ticker):
+TICKERS = []
+
+def runOrder(ticker):
 	val = Action(ActionType.ORDERS, ticker).run()
 	transType = "BID"
 	tickers = val["TICKER"]
@@ -27,7 +30,7 @@ def getBidAsk(ticker):
 	for transType,tickers, price, quantity in zip(transType,tickers, price, quantity):
 		SQLService.insertOrder(transType, period, tickers, price, quantity)
 
-	bestBid = max(price)
+	#bestBid = max(price)
 
 	transType = "ASK"
 	tickers = val["TICKER"]
@@ -36,9 +39,9 @@ def getBidAsk(ticker):
 	for transType,tickers, price, quantity in zip(transType,tickers, price, quantity):
 		SQLService.insertOrder(transType, period, tickers, price, quantity)
 
-	bestAsk = max(price)
-
-	return (bestBid, bestAsk)
+def batchOrders():
+	for name in TICKERS:
+		runOrder(name)
 
 def runSecurities():
 	global stockList;
@@ -65,6 +68,17 @@ def createStocks():
 if (__name__ == "__main__"):
 	SQLService.connectToDB()
 	while (True):
+		if period == 0:
+			runSecurities()
+			cursor = SQLService.getUniqueTickers()
+			for name in cursor.fetchall():
+				TICKERS.append(name[0])
+			print(TICKERS)
+			batchOrders()
+		# else:
+		# 	runSecurities()
+		# 	batchOrders()
 		time.sleep(1)
 		period = period + 1
+
 

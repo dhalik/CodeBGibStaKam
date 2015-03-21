@@ -2,7 +2,7 @@ import scipy.stats as stats
 import scipy.stats as uniform
 import numpy as np
 
-class Stock:    
+class Stock:
 	def __init__(self, ticker):
 		self.ticker = ticker
 		self.outstandingShares=0
@@ -11,7 +11,7 @@ class Stock:
 		self.volDistribution = ''
 
 		self.bidAvg=[]
-		self.askAvg=[]        
+		self.askAvg=[]
 		self.PurchaseHistory = []
 		self.Earnings = []
 		self.DivRatio = []
@@ -21,36 +21,35 @@ class Stock:
 		self.Price = []
 		self.bidAvg=[]
 		self.askAvg=[]
-		
+
 	def buyStock(self, amount, price, time):
 		self.shares = self.shares+amount
 		self.PurchaseHistory.append(['Buy',time,amount,price])
-		
+
 	def sellStock(self, amount, price, time):
 		self.shares = self.shares - amount
 		self.PurchaseHistory.append(['Sell', time, amount, price])
-		
+
 	def currentValueOfPosition(self, currentMarketPrice):
 		return currentMarketPrice * self.shares
-
 
 	#num:price, earnings, divRatio, MVPS, vol, div
 	#list: bid, ask
 	def addTick(self, price, earnings, divRatio, MVPS, vol, div):
-		if price != '': 
+		if price != '':
 			self.Price.append(price);
 		if earnings != '':
 			self.Earnings.append(earnings);
-		if divRatio != '':     
+		if divRatio != '':
 			self.DivRatio.append(divRatio);
-		if MVPS != '': 
+		if MVPS != '':
 			self.MVPS.append(MVPS);
-		if vol != '': 
+		if vol != '':
 			self.Vol.append(vol);
-		if div != '': 
+		if div != '':
 			self.Dividends.append(div);
 
-			
+
 	#Assuming we have div calculated
 	def calcEarnings(self, div, divRatio):
 		earnings = (div*self.outstandingShares)/divRatio
@@ -62,12 +61,12 @@ class Stock:
 			return earnings
 		except ZeroDivisionError:
 			print "Zero Division: failed to calculate Next earnings"
-			
-	
+
+
 	def calcTotalShares(self):
 		pass
 
-	#===========================Volatility calculations================ 
+	#===========================Volatility calculations================
 	def isVolNormal(self):
 		pVal = 0
 		if (len(self.Vol)> 8):
@@ -85,10 +84,10 @@ class Stock:
 			return False
 	def isVolConstant(self):
 		return all(self.Vol[0] == item for item in self.Vol)
-		
+
 	def stdOfVolatility(self):
 		return np.std(self.Vol)
-	
+
 	def meanOfVolatility(self):
 		return np.mean(self.Vol)
 
@@ -103,7 +102,7 @@ class Stock:
 		return [min(self.Vol), max(self.Vol), 1/len(self.Vol), self.isVolUniform()]
 
 
-						  
+
 if __name__ == "__main__":
 	AAPL = Stock('AAPL');
 	AAPL.addTick(0,1,2,3,4,'')
@@ -112,7 +111,3 @@ if __name__ == "__main__":
 	print AAPL.MVPS
 	print AAPL.Vol
 	print AAPL.Dividends
-
-
-
-	
