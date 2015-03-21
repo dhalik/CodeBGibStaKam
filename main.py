@@ -68,10 +68,12 @@ if (__name__ == "__main__"):
 			for name in cursor.fetchall():
 				TICKERS.append(name[0])
 			print(TICKERS)
-		#	batchOrders()
+			batchOrders()
 		else:
-			runSecurities()
-		#	batchOrders()
+			SQLService.closeDBConnection()
+			break
+		# 	runSecurities()
+		# 	batchOrders()
 		time.sleep(1)
 		period = period + 1
 
