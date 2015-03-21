@@ -44,11 +44,14 @@ def subscribe(user, password, delay):
 			rline = sfile.readline()
 			while rline:
 				outputData = rline.strip()
-				print(outputData)
 				#Save outputData to database here
-				
+				params = outputData.split(' ');
+				#Replace 0 with proper global period count later
+				if len(params) == 4:
+					SQLService.insertTransaction(params[0],0,params[1],params[2],params[3])
 				rline = sfile.readline()
 		finally:
+			pass
 
 def unsubscribeToUpdates():
 	global threadRunning
@@ -65,6 +68,3 @@ def subscribeToUpdates():
 		print "Error: unable to start thread"
 	
 subscribeToUpdates()
-
-# while 1:
-#    pass
