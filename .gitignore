@@ -1,2 +1,3 @@
 *.pyc
 makefile
+*.db
