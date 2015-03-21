@@ -12,12 +12,8 @@ def connectToDB():
 	# Create table
 	#c.execute("DROP TABLE if exists " + stocksTableName + "")
 	#c.execute("DROP TABLE if exists " + transactionsTableName + "")
-	c.execute("SELECT * FROM " + stocksTableName + "")
-	if(not c.fetchone()):
-		c.execute("CREATE TABLE " + stocksTableName + "(period integer, ticker text, networth double, dividendratio double, volatility double)")
-	c.execute("SELECT * FROM " + transactionsTableName)
-	if(not c.fetchone()):
-		c.execute("CREATE TABLE " + transactionsTableName + "(type text, period integer,ticker text, price double, shares integer)")
+	c.execute("CREATE TABLE IF NOT EXISTS " + stocksTableName + "(period integer, ticker text, networth double, dividendratio double, volatility double)")
+	c.execute("CREATE TABLE IF NOT EXISTS " + transactionsTableName + "(type text, period integer,ticker text, price double, shares integer)")
 	# Save (commit) the changes
 	conn.commit()
 
