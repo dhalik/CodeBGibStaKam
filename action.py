@@ -1,5 +1,6 @@
 from ActionType import ActionType
 import math
+import time
 import clientpy2
 
 class Action:
@@ -48,7 +49,7 @@ class Action:
                 e["TICKER"].append(tokens[i * 4+1])
                 e["NET_WORTH"].append(float(tokens[i * 4 + 2]))
                 e["DIV_RATIO"].append(float(tokens[i * 4 + 3]))
-                e["VOL"].append(float(tokens[i * 4 + 3]))
+                e["VOL"].append(float(tokens[i * 4 + 4]))
         elif (tokens[0] == "SECURITY_ORDERS_OUT"):
             e["BID_QUANTITY"] = []
             e["ASK_QUANTITY"] = []
@@ -62,9 +63,9 @@ class Action:
                 else:
                     e["ASK_PRICE"].append(float(tokens[i * 4 + 3]))
                     e["ASK_QUANTITY"].append(float(tokens[i*4 + 4]))
-        elif (tokens[0] == "BID_OUT"): #or error
+        elif (tokens[0] == "BID_OUT"):
             print "LOG: BID PLACED: " + self._command
-        elif (tokens[0] == "ASK_OUT"): #or error
+        elif (tokens[0] == "ASK_OUT"):
             print "LOG: ASK PLACED: " + self._command
         elif (tokens[0] == "CLEAR_BID_OUT"):
             print "LOG: BID CLEARED: " + self._command
@@ -105,10 +106,6 @@ class Action:
         return str([self._action, self._params])
 
 if __name__ == "__main__":
-    print  Action(ActionType.MY_CASH).run();
-    print  Action(ActionType.MY_SECS,"").run();
-    print  Action(ActionType.MY_ORDERS, "").run();
-    print  Action(ActionType.SECURITIES).run();
-    print  Action(ActionType.ORDERS, "TWTR").run();
-    print  Action(ActionType.BID, "TWTR 10 10").run();
-    print  Action(ActionType.CLEAR_BID, "TWTR").run();
+    while (True):
+        print  Action(ActionType.SECURITIES).run()
+        time.sleep(1)
