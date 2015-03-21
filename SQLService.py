@@ -5,6 +5,7 @@ import string
 dbName = 'gibstankam.db'
 stocksTableName = 'stocks'
 transactionsTableName = 'transactions'
+ordersTableName = 'orders'
 
 def connectToDB():
 	conn = sqlite3.connect(dbName)
@@ -13,7 +14,8 @@ def connectToDB():
 	#c.execute("DROP TABLE if exists " + stocksTableName + "")
 	#c.execute("DROP TABLE if exists " + transactionsTableName + "")
 	c.execute("CREATE TABLE IF NOT EXISTS " + stocksTableName + "(period integer, ticker text, networth double, dividendratio double, volatility double)")
-	c.execute("CREATE TABLE IF NOT EXISTS " + transactionsTableName + "(type text, period integer,ticker text, price double, shares integer)")
+	c.execute("CREATE TABLE IF NOT EXISTS " + transactionsTableName + "(type text, period integer, ticker text, price double, shares integer)")
+	c.execute("CREATE TABLE IF NOT EXISTS " + ordersTableName + "(type text, period integer, ticker text,  price double, shares integer, PRIMARY KEY (period, ticker))")
 	# Save (commit) the changes
 	conn.commit()
 
@@ -71,11 +73,28 @@ def insertTransaction(transType, period, ticker, price, shares):
 	conn.commit()
 	conn.close()
 
+def insertOrder(transType, period, ticker, price, shares):
+	conn = sqlite3.connect(dbName)
+	c = conn.cursor()
+	c.execute("INSERT INTO " + ordersTableName
+		+ " VALUES ('" + str(transType) + "','" + str(period) + "','" + str(ticker) + "','" + str(price) +"','"+ str(shares) + "')")
+	conn.commit()
+	conn.close()
+
+def getOrdersForQuery(query):
+	conn = sqlite3.connect(dbName)
+	c = conn.cursor()
+	c.execute(query)
+	print c.fetchall()
+	conn.commit()
+	conn.close()
+
 if (__name__ == "__main__"):
     connectToDB()
     insertStock(1,"APPL",100.01,0.001,0.5)
     insertStock(2,"APPL",200.01,0.2,0.10)
-    insertTransaction("BUY",1,"APPL",200.01,100)
+    insertTransaction("BUY",1,"XOM",200.01,100)
+    insertOrder("BUY",99,"EA",11.11,11)
     getStockInfoForTicker("APPL")
     getAllTransactions()
 
