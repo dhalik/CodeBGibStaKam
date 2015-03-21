@@ -1,6 +1,8 @@
 import scipy.stats as stats
 import scipy.stats as uniform
 import numpy as np
+import Action
+import ActionType
 
 ##Contracts:
 ##buyStock(self,amount,price, time); all parameters are numbers
@@ -13,19 +15,19 @@ import numpy as np
 ##isVolUniform(); returns T/F if volatility is Uniform
 ##bidSlopeChange; returns (a,b) where a is current bid slope and b is a bool if slope changed
 
-class Stock:    
+class Stock:
 	def __init__(self, ticker):
 		self.ticker = ticker
+		self.MAPeriod = 3;
 		self.outstandingShares=0
 		self.shares = 0
 		self.initialDiv = 0
 		self.volDistribution = ''
-	
-		#SlopeChange = (a,b) where a is the current bid slope and b is a bool determining if the slope changed 
+
+		#SlopeChange = (a,b) where a is the current bid slope and b is a bool determining if the slope changed
 		self.bidSlopeChange = (0,False)
 		self.askSlopeChange = (0,False)
 		self.netWorthSlopeChange = (0,False)
-		
 		self.bidAvg=[]
 		self.askAvg=[]
 
@@ -45,10 +47,18 @@ class Stock:
 	def buyStock(self, amount, price, time):
 		self.shares = self.shares+amount
 		self.PurchaseHistory.append(['Buy',time,amount,price])
+		Action.Action(ActionType.ActionType.BID, self.ticker + " " + str(price) + " 15" ).run()
 
 	def sellStock(self, amount, price, time):
-		self.shares = self.shares - amount
+		secs = Action.Action(ActionType.ActionType.MY_SECS).run()
+		quant = 0;
+		for i in range(0,len(secs)):
+			if (secs["TICKER"][i] == self.ticker):
+				# I knw this says price, but its actually quantity!
+				quant = secs["PRICE"];
 		self.PurchaseHistory.append(['Sell', time, amount, price])
+		Action.Action(ActionType.ActionType.ASK, self.ticker + " " + str(price) + " " + str(quant))
+		self.shares = 0;
 
 	def currentValueOfPosition(self, currentMarketPrice):
 		return currentMarketPrice * self.shares
@@ -58,14 +68,14 @@ class Stock:
 			self.bidAvg.append(sum(bid)/len(bid))
 		if (len(ask) > 0):
 			self.askAvg.append(sum(ask)/len(ask))
- 
+
 
 	def addBidAskSlope(self):
-		if (len(self.bidAvg) >=3):
-			slope = (self.bidAvg[-1] - self.bidAvg[-3])/3
+		if (len(self.bidAvg) >= self.MAPeriod):
+			slope = (self.bidAvg[-1] - self.bidAvg[-self.MAPeriod])/self.MAPeriod
 			self.bidSlope.append(slope)
-		if (len(self.askAvg) >=3):
-			slope = (self.askAvg[-1] - self.askAvg[-3])/3
+		if (len(self.askAvg) >= self.MAPeriod):
+			slope = (self.askAvg[-1] - self.askAvg[-self.MAPeriod])/self.MAPeriod
 			self.askSlope.append(slope)
 
 	def addNetWorthSlope(self):
@@ -86,16 +96,16 @@ class Stock:
 			if ((self.askSlope[-1] > 0 and self.askSlope[-2] < 0) or (self.askSlope[-1] < 0 and self.askSlope[-2] > 0)):
 				askChange = True
 			self.askSlopeChange = (self.askSlope[-1], askChange)
-		
+
 		if(len(self.netWorthSlope) >= 2):
 			if ((self.netWorthSlope[-1] > 0 and self.netWorthSlope[-2] < 0) or (self.netWorthSlope[-1] < 0 and self.netWorthSlope[-2] > 0)):
 				netWorthSlopeChange = True
 			self.netWorthSlopeChange = (self.netWorthSlope[-1], netWorthSlopeChange)
-			
+
 	#num:price, earnings, divRatio, MVPS, vol, div
 	#list: bid, ask
 	def addTick(self, price, networth, earnings, divRatio, MVPS, vol, div, bid, ask):
-		if price != '': 
+		if price != '':
 			self.Price.append(price)
 		if earnings != '':
 			self.Earnings.append(earnings)
@@ -108,21 +118,23 @@ class Stock:
 		if div != '':
 			self.Dividends.append(div)
 		if networth != '':
-			 self.NetWorth.append(networth)
+			self.NetWorth.append(networth)
 
 		if (len(bid) != 0):
 			bid.remove(min(bid))
 		if (len(ask) !=0):
 			ask.remove(max(ask))
-			
-			
+
+		if (divRatio < 0.0001):
+			self.sellStock(0,price,1)
+
 		self.addBidAskPrice(bid,ask)
 		self.addBidAskSlope()
 		self.addNetWorthSlope()
-		
+
 		self.updateSlopeTuples()
 
-				
+
 	#Assuming we have div calculated
 	def calcEarnings(self, div, divRatio):
 		earnings = (div*self.outstandingShares)/divRatio
