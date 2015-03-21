@@ -6,9 +6,13 @@ dbName = 'gibstankam.db'
 stocksTableName = 'stocks'
 transactionsTableName = 'transactions'
 ordersTableName = 'orders'
+conn = None
 
-def connectToDB():
+def connectToDB():	
+	global conn
 	conn = sqlite3.connect(dbName)
+	conn.text_factory = str
+	
 	c = conn.cursor()
 	# Create table
 	#c.execute("DROP TABLE if exists " + stocksTableName + "")
@@ -18,76 +22,65 @@ def connectToDB():
 	c.execute("CREATE TABLE IF NOT EXISTS " + ordersTableName + "(type text, period integer, ticker text,  price double, shares integer)")
 	# Save (commit) the changes
 	conn.commit()
-
-	# We can also close the connection if we are done with it.
-	# Just be sure any changes have been committed or they will be lost.
-	conn.close()
+	
 
 def getStockInfoForTicker(ticker):
 	t = (ticker,)
-	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("SELECT * FROM " + stocksTableName+ " WHERE ticker=?", t)
-	print c.fetchall()
-	conn.commit()
-	conn.close()
+	return c
 
 #Only use this if you are really friggin lazy...
 def getStockInfoForQuery(query):
-	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute(query)
-	print c.fetchall()
-	conn.commit()
-	conn.close()
+	return c
 
 def getAllStocks():
-	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("SELECT * FROM " + stocksTableName)
-	print c.fetchall()
-	conn.commit()
-	conn.close()
+	return c
 
 def insertStock(period,ticker,networth,dividendratio,volatility):
-	conn = sqlite3.connect(dbName)
+	global conn
 	c = conn.cursor()
 	c.execute("INSERT INTO " + stocksTableName
 		+ " VALUES ('" + str(period) + "','" + ticker +"','"+ str(networth) + "','"+str(dividendratio)+ "','"+ str(volatility) + "')")
 	conn.commit()
-	conn.close()
 
 def getAllTransactions():
-	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("SELECT * FROM " + transactionsTableName)
-	print c.fetchall()
-	conn.commit()
-	conn.close()
+	return c
+
 
 def insertTransaction(transType, period, ticker, price, shares):
-	conn = sqlite3.connect(dbName)
+	global conn
 	c = conn.cursor()
 	c.execute("INSERT INTO " + transactionsTableName
 		+ " VALUES ('" + str(transType) + "','" + str(period) + "','" + str(ticker) + "','" + str(price) +"','"+ str(shares) + "')")
 	conn.commit()
-	conn.close()
 
 def insertOrder(transType, period, ticker, price, shares):
-	conn = sqlite3.connect(dbName)
+	global conn
 	c = conn.cursor()
 	c.execute("INSERT INTO " + ordersTableName
 		+ " VALUES ('" + str(transType) + "','" + str(period) + "','" + str(ticker) + "','" + str(price) +"','"+ str(shares) + "')")
 	conn.commit()
-	conn.close()
 
 def getOrdersForQuery(query):
-	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute(query)
-	print c.fetchall()
-	conn.commit()
+	return c
+
+def closeDBConnection():
+	global conn
 	conn.close()
+
+def getUniqueTickers():
+	c = conn.cursor()
+	c.execute("SELECT DISTINCT ticker FROM " + stocksTableName)
+	return c
 
 if (__name__ == "__main__"):
     connectToDB()

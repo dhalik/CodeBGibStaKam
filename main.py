@@ -2,6 +2,7 @@ from Action import Action
 import SQLService
 import time
 import SubscriberService
+import string
 from ActionType import *
 
 period = 0;
@@ -15,6 +16,8 @@ SNY_TICKER = 'SNY'
 TSLA_TICKER = 'TSLA'
 TWTR_TICKER = 'TWTR'
 XOM_TICKER = 'XOM'
+
+TICKERS = []
 
 def runOrder(ticker):
 	val = Action(ActionType.ORDERS, ticker).run()
@@ -32,6 +35,10 @@ def runOrder(ticker):
 	for transType,tickers, price, quantity in zip(transType,tickers, price, quantity):
 		SQLService.insertOrder(transType, period, tickers, price, quantity)
 
+def batchOrders():
+	for name in TICKERS:
+		runOrder(name)
+
 def runSecurities():
 	val = Action(ActionType.SECURITIES).run()
 	tickers = val["TICKER"]
@@ -44,17 +51,18 @@ def runSecurities():
 if (__name__ == "__main__"):
 	SQLService.connectToDB()
 	while (True):
-		runSecurities()
-		runOrder(GOOG_TICKER)
-		runOrder(AAPL_TICKER)
-		runOrder(ATVI_TICKER)
-		runOrder(EA_TICKER)
-		runOrder(FB_TICKER)
-		runOrder(MSFT_TICKER)
-		runOrder(SNY_TICKER)
-		runOrder(TSLA_TICKER)
-		runOrder(TWTR_TICKER)
-		runOrder(XOM_TICKER)
+		if period == 0:
+			runSecurities()
+			cursor = SQLService.getUniqueTickers()
+			for name in cursor.fetchall():
+				TICKERS.append(name[0])
+			print(TICKERS)
+			batchOrders()
+		# else:
+		# 	runSecurities()
+		# 	batchOrders()
+
 		time.sleep(1)
 		period = period + 1
+
 
