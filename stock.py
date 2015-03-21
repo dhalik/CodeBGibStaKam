@@ -4,6 +4,7 @@ import numpy as np
 import Action
 import ActionType
 import traceback
+import math
 
 ##Contracts:
 ##buyStock(self,amount,price, time); all parameters are numbers
@@ -48,7 +49,7 @@ class Stock:
 	def buyStock(self, amount, price, time):
 		self.shares = self.shares+amount
 		self.PurchaseHistory.append(['Buy',time,amount,price])
-		Action.Action(ActionType.ActionType.BID, self.ticker + " " + str(price) + " 15" ).run()
+		Action.Action(ActionType.ActionType.BID, self.ticker + " " + str(price) + " 10" ).run()
 
 	def sellStock(self, amount, price, time):
 		price -= 0.005
@@ -59,7 +60,7 @@ class Stock:
 				# I knw this says price, but its actually quantity!
 				quant = secs["PRICE"][i];
 		self.PurchaseHistory.append(['Sell', time, amount, price])
-		Action.Action(ActionType.ActionType.ASK, self.ticker + " " + str(price) + " " + str(int(quant))).run()
+		Action.Action(ActionType.ActionType.ASK, self.ticker + " " + str(price) + " " + str(int(math.ceil(quant/2)))).run()
 		self.divRatio = 0;
 
 	def currentValueOfPosition(self, currentMarketPrice):
