@@ -31,13 +31,16 @@ class Action:
             e["ASK_QUANTITY"] = []
             e["BID_PRICE"] = []
             e["ASK_PRICE"] = []
-            if (len(tokens) > 1):
-                e["TICKER"] = [tokens[2]]
+            e["BID_TICKER"] = []
+            e["ASK_TICKER"] = []
             for i in range(0,int(len(tokens)/4)):
                 if (tokens[i * 4 + 1] == "BID"):
+                    e["BID_TICKER"].append((tokens[i * 4 + 2]))
                     e["BID_PRICE"].append(float(tokens[i * 4 + 3]))
                     e["BID_QUANTITY"].append(float(tokens[i * 4 + 4]))
                 else:
+                    print tokens[i*4+2]
+                    e["ASK_TICKER"].append((tokens[i * 4 + 2]))
                     e["ASK_PRICE"].append(float(tokens[i * 4 + 3]))
                     e["ASK_QUANTITY"].append(float(tokens[i*4 + 4]))
         elif (tokens[0] == "SECURITIES_OUT"):
