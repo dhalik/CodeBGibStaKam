@@ -70,13 +70,14 @@ class Action:
 			print tokens[0]
 			pass
 		elif (tokens[0] == "ASK_OUT"):
+			print tokens[0]
 			pass
 		elif (tokens[0] == "CLEAR_BID_OUT"):
 			pass
 		elif (tokens[0] == "CLEAR_ASK_OUT"):
 			pass
 		elif (tokens[0] == "ERROR"):
-			raise ValueError("Error raised");
+			pass
 		else:
 			print "Unhandled Type: " + retVal
 		return e
@@ -87,20 +88,19 @@ class Action:
 				or self._action == ActionType.MY_ORDERS
 				or self._action == ActionType.SECURITIES)
 				and len(self._params) != 0):
-			raise ValueError("Too many args")
+			pass
 		elif ((self._action == ActionType.ORDERS
 				or self._action == ActionType.CLEAR_BID
 				or self._action == ActionType.CLEAR_ASK)
 				and len(self._params.split(" ")) != 1):
-			raise ValueError("Too many args")
+			pass
 		elif ((self._action == ActionType.BID
 				or self._action == ActionType.ASK)
 				and len(self._params.split(" ")) != 3):
-			raise ValueError("Too many args")
+			pass
 
 	def run(self):
 		self.checkParams()
-		print self._command
 		self._got = clientpy2.run("Good_Biddies", "asdfghjkl", self._command)
 		return self.parse(self._got)
 

@@ -1,6 +1,8 @@
 import scipy.stats as stats
 import scipy.stats as uniform
 import numpy as np
+import Action
+import ActionType
 
 ##Contracts:
 ##buyStock(self,amount,price, time); all parameters are numbers
@@ -16,7 +18,7 @@ import numpy as np
 class Stock:
 	def __init__(self, ticker):
 		self.ticker = ticker
-		self.MAPeriod = 7;
+		self.MAPeriod = 3;
 		self.outstandingShares=0
 		self.shares = 0
 		self.initialDiv = 0
@@ -45,10 +47,18 @@ class Stock:
 	def buyStock(self, amount, price, time):
 		self.shares = self.shares+amount
 		self.PurchaseHistory.append(['Buy',time,amount,price])
+		Action.Action(ActionType.ActionType.BID, self.ticker + " " + str(price) + " 15" ).run()
 
 	def sellStock(self, amount, price, time):
-		self.shares = self.shares - amount
+		secs = Action.Action(ActionType.ActionType.MY_SECS).run()
+		quant = 0;
+		for i in range(0,len(secs)):
+			if (secs["TICKER"][i] == self.ticker):
+				# I knw this says price, but its actually quantity!
+				quant = secs["PRICE"];
 		self.PurchaseHistory.append(['Sell', time, amount, price])
+		Action.Action(ActionType.ActionType.ASK, self.ticker + " " + str(price) + " " + str(quant))
+		self.shares = 0;
 
 	def currentValueOfPosition(self, currentMarketPrice):
 		return currentMarketPrice * self.shares
@@ -115,6 +125,8 @@ class Stock:
 		if (len(ask) !=0):
 			ask.remove(max(ask))
 
+		if (divRatio < 0.0001):
+			self.sellStock(0,price,1)
 
 		self.addBidAskPrice(bid,ask)
 		self.addBidAskSlope()
