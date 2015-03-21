@@ -6,10 +6,8 @@ dbName = 'gibstankam.db'
 stocksTableName = 'stocks'
 transactionsTableName = 'transactions'
 ordersTableName = 'orders'
-conn = None
 
 def connectToDB():	
-	global conn
 	conn = sqlite3.connect(dbName)
 	conn.text_factory = str
 	c = conn.cursor()
@@ -26,63 +24,75 @@ def connectToDB():
 	
 
 def getStockInfoForTicker(ticker):
+	conn = sqlite3.connect(dbName)
 	t = (ticker,)
 	c = conn.cursor()
 	c.execute("SELECT * FROM " + stocksTableName+ " WHERE ticker=?", t)
+	conn.close()
 	return c
 
 def getAllStocks():
+	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("SELECT * FROM " + stocksTableName)
 	return c
 
 def insertStock(period,ticker,networth,dividendratio,volatility):
-	global conn
+	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("INSERT INTO " + stocksTableName
 		+ " VALUES ('" + str(period) + "','" + ticker +"','"+ str(networth) + "','"+str(dividendratio)+ "','"+ str(volatility) + "')")
 	conn.commit()
+	conn.close()
 
 def getAllTransactions():
+	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("SELECT * FROM " + transactionsTableName)
+	conn.close()
 	return c
 
-
 def insertTransaction(transType, period, ticker, price, shares):
-	global conn
+	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("INSERT INTO " + transactionsTableName
 		+ " VALUES ('" + str(transType) + "','" + str(period) + "','" + str(ticker) + "','" + str(price) +"','"+ str(shares) + "')")
 	conn.commit()
+	conn.close()
 
 def insertOrder(transType, period, ticker, price, shares):
-	global conn
+	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("INSERT INTO " + ordersTableName
 		+ " VALUES ('" + str(transType) + "','" + str(period) + "','" + str(ticker) + "','" + str(price) +"','"+ str(shares) + "')")
 	conn.commit()
+	conn.close()
 
 def getMostRecentPeriods(ticker, period2, period):
+	conn = sqlite3.connect(dbName)
 	params = (ticker, period2, period,)
 	c = conn.cursor()
 	c.execute("SELECT period, networth FROM " + stocksTableName + " WHERE ticker=? " 
 		+ "AND period >= ? AND period <= ? ORDER BY period ASC", params)
+	conn.close()
 	return c
 
 #Only use this if you are really friggin lazy...
 def query(query):
+	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute(query)
+	conn.close()
 	return c
 
 def closeDBConnection():
-	global conn
 	conn.close()
 
 def getUniqueTickers():
+	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("SELECT DISTINCT ticker FROM " + stocksTableName)
+	conn.close()
 	return c
 
 if (__name__ == "__main__"):
