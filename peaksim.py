@@ -76,11 +76,24 @@ if (__name__ == "__main__"):
 			print(TICKERS)
 			batchOrders()
 		else:
-			SQLService.closeDBConnection()
-			break
-		# 	runSecurities()
-		# 	batchOrders()
-		time.sleep(1)
+			if period >= 30:
+				SQLService.closeDBConnection()
+				break
+			runSecurities()
+			batchOrders()
+
+			if period >= 2:
+				for ticker in TICKERS:
+					period2 = period -2
+					period1 = period - 1
+					cursor = SQLService.query("SELECT networth FROM " + SQLService.stocksTableName 
+						+ " WHERE ticker = " + name 
+						+ " AND period >=" + period2 + " AND period <= " + period1 
+						+ " ORDER BY period DESC")
+					for name in cursor.fetchall():
+						print("NetWorth"+(name[0]))
+
 		period = period + 1
+		time.sleep(1)
 
 
