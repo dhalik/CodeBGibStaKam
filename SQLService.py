@@ -38,6 +38,14 @@ def getStockInfoForQuery(query):
 	conn.commit()
 	conn.close()
 
+def getAllStocks():
+	conn = sqlite3.connect(dbName)
+	c = conn.cursor()
+	c.execute("SELECT * FROM " + stocksTableName)
+	print c.fetchall()
+	conn.commit()
+	conn.close()
+
 def insertStock(period,ticker,networth,dividendratio,volatility):
 	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
