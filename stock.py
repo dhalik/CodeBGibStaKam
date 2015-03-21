@@ -3,6 +3,7 @@ import scipy.stats as uniform
 import numpy as np
 import Action
 import ActionType
+import traceback
 
 ##Contracts:
 ##buyStock(self,amount,price, time); all parameters are numbers
@@ -18,7 +19,7 @@ import ActionType
 class Stock:
 	def __init__(self, ticker):
 		self.ticker = ticker
-		self.MAPeriod = 3;
+		self.MAPeriod = 7;
 		self.outstandingShares=0
 		self.shares = 0
 		self.initialDiv = 0
@@ -50,15 +51,16 @@ class Stock:
 		Action.Action(ActionType.ActionType.BID, self.ticker + " " + str(price) + " 15" ).run()
 
 	def sellStock(self, amount, price, time):
+		price -= 0.005
 		secs = Action.Action(ActionType.ActionType.MY_SECS).run()
 		quant = 0;
-		for i in range(0,len(secs)):
+		for i in range(0,len(secs["TICKER"])):
 			if (secs["TICKER"][i] == self.ticker):
 				# I knw this says price, but its actually quantity!
-				quant = secs["PRICE"];
+				quant = secs["PRICE"][i];
 		self.PurchaseHistory.append(['Sell', time, amount, price])
-		Action.Action(ActionType.ActionType.ASK, self.ticker + " " + str(price) + " " + str(quant))
-		self.shares = 0;
+		Action.Action(ActionType.ActionType.ASK, self.ticker + " " + str(price) + " " + str(int(quant))).run()
+		self.divRatio = 0;
 
 	def currentValueOfPosition(self, currentMarketPrice):
 		return currentMarketPrice * self.shares
@@ -125,8 +127,11 @@ class Stock:
 		if (len(ask) !=0):
 			ask.remove(max(ask))
 
-		if (divRatio < 0.0001):
-			self.sellStock(0,price,1)
+		if (divRatio > 0 and divRatio < 0.001):
+			if (len(bid) != 0):
+				self.sellStock(0,max(bid),1)
+
+
 
 		self.addBidAskPrice(bid,ask)
 		self.addBidAskSlope()

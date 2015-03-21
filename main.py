@@ -3,6 +3,7 @@ import SQLService
 import time
 import SubscriberService
 import string
+import Queue
 from ActionType import *
 from stock import Stock
 
@@ -79,7 +80,6 @@ if (__name__ == "__main__"):
 	SQLService.connectToDB()
 	#SubscriberService.subscribeToUpdates()
 	createStocks()
-	global cashBase
 	cashBase = Action(ActionType.MY_CASH).run()[ActionType.MY_CASH]
 	while (True):
 		if period == 0:

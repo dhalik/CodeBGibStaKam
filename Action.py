@@ -1,7 +1,7 @@
 from ActionType import ActionType
 import math
 import time
-import clientpy2
+import clientpy22
 
 class Action:
 
@@ -77,6 +77,7 @@ class Action:
 		elif (tokens[0] == "CLEAR_ASK_OUT"):
 			pass
 		elif (tokens[0] == "ERROR"):
+			print retVal
 			pass
 		else:
 			print "Unhandled Type: " + retVal
@@ -101,7 +102,9 @@ class Action:
 
 	def run(self):
 		self.checkParams()
-		self._got = clientpy2.run("Good_Biddies", "asdfghjkl", self._command)
+		if (self._action == ActionType.ASK):
+			print self._command
+		self._got = clientpy22.run("Good_Biddies", "asdfghjkl", self._command)
 		return self.parse(self._got)
 
 	def __repr__(self):
@@ -109,5 +112,5 @@ class Action:
 
 if __name__ == "__main__":
 	while (True):
-		print  Action(ActionType.SECURITIES).run()
+		print Action(ActionType.SECURITIES).run()
 		time.sleep(1)
