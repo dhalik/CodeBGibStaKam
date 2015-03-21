@@ -26,7 +26,7 @@ def subscribe(user, password, delay):
 	global threadRunning
 	global sock
 	HOST, PORT = "codebb.cloudapp.net", 17429
-    
+
 	data=user + " " + password + "\nSUBSCRIBE\n"
 
 	sock.connect((HOST, PORT))
@@ -36,7 +36,7 @@ def subscribe(user, password, delay):
 	while threadRunning:
 		time.sleep(delay)
 		if not threadRunning:
-			thread.exit() 
+			thread.exit()
 			sock.close()
 
 		try:
@@ -63,8 +63,8 @@ def subscribeToUpdates():
 		threadRunning = True
 		print(threadRunning)
 		threadSubscribe.start()
-   		# thread.start_new_thread( subscribe, ("Good_Biddies","asdfghjkl",0.1,) )
 	except:
 		print "Error: unable to start thread"
-	
-subscribeToUpdates()
+
+if __name__ == "__main__":
+    subscribeToUpdates()

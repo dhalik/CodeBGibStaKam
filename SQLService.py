@@ -10,13 +10,14 @@ def connectToDB():
 	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	# Create table
-	c.execute("DROP TABLE if exists " + stocksTableName + "")
-	c.execute("DROP TABLE if exists " + transactionsTableName + "")
-
-	c.execute("CREATE TABLE " + stocksTableName + "(period integer, ticker text, networth double, dividendratio double, volatility double)")
-	# c.execute('''CREATE TABLE stocks
-	#              (period integer, ticker text, networth double, dividendratio double, volatility double)''')
-	c.execute("CREATE TABLE " + transactionsTableName + "(type text, period integer,ticker text, price double, shares integer)")
+	#c.execute("DROP TABLE if exists " + stocksTableName + "")
+	#c.execute("DROP TABLE if exists " + transactionsTableName + "")
+	c.execute("SELECT * FROM " + stocksTableName + "")
+	if(not c.fetchone()):
+		c.execute("CREATE TABLE " + stocksTableName + "(period integer, ticker text, networth double, dividendratio double, volatility double)")
+	c.execute("SELECT * FROM " + transactionsTableName)
+	if(not c.fetchone()):
+		c.execute("CREATE TABLE " + transactionsTableName + "(type text, period integer,ticker text, price double, shares integer)")
 	# Save (commit) the changes
 	conn.commit()
 
@@ -44,7 +45,7 @@ def getStockInfoForQuery(query):
 def insertStock(period,ticker,networth,dividendratio,volatility):
 	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
-	c.execute("INSERT INTO " + stocksTableName 
+	c.execute("INSERT INTO " + stocksTableName
 		+ " VALUES ('" + str(period) + "','" + ticker +"','"+ str(networth) + "','"+str(dividendratio)+ "','"+ str(volatility) + "')")
 	conn.commit()
 	conn.close()
@@ -60,15 +61,16 @@ def getAllTransactions():
 def insertTransaction(transType, period, ticker, price, shares):
 	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
-	c.execute("INSERT INTO " + transactionsTableName 
+	c.execute("INSERT INTO " + transactionsTableName
 		+ " VALUES ('" + str(transType) + "','" + str(period) + "','" + str(ticker) + "','" + str(price) +"','"+ str(shares) + "')")
 	conn.commit()
 	conn.close()
 
-connectToDB()
-insertStock(1,"APPL",100.01,0.001,0.5)
-insertStock(2,"APPL",200.01,0.2,0.10)
-insertTransaction("BUY",1,"APPL",200.01,100)
-getStockInfoForTicker("APPL")
-getAllTransactions()
+if (__name__ == "__main__"):
+    connectToDB()
+    insertStock(1,"APPL",100.01,0.001,0.5)
+    insertStock(2,"APPL",200.01,0.2,0.10)
+    insertTransaction("BUY",1,"APPL",200.01,100)
+    getStockInfoForTicker("APPL")
+    getAllTransactions()
 
