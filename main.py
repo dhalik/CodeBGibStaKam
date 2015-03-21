@@ -18,15 +18,15 @@ def runOrder(ticker):
 	tickers = val["TICKER"]
 	bidPrices= val["BID_PRICE"]
 	quantitys= val["BID_QUANTITY"]
-	for transType,ticker, price, quantity in zip(transTypes,tickers, bidPrices, quantitys):
-		SQLService.insertOrder(transType, period, ticker, price, quantity)
+	#for transType,ticker, price, quantity in zip(transTypes,tickers, bidPrices, quantitys):
+		#SQLService.insertOrder(transType, period, ticker, price, quantity)
 
 	transTypes = "ASK"
 	tickers = val["TICKER"]
 	askPrices= val["ASK_PRICE"]
 	quantitys= val["ASK_QUANTITY"]
-	for transType,ticker, price, quantity in zip(transTypes,tickers, askPrices, quantitys):
-		SQLService.insertOrder(transType, period, ticker, price, quantity)
+	#for transType,ticker, price, quantity in zip(transTypes,tickers, askPrices, quantitys):
+	#	SQLService.insertOrder(transType, period, ticker, price, quantity)
 
 	return (bidPrices, askPrices)
 
