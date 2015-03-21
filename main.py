@@ -85,8 +85,6 @@ if (__name__ == "__main__"):
 		if period == 0:
 			runSecurities()
 			cursor = SQLService.getUniqueTickers()
-			for name in cursor.fetchall():
-				TICKERS.append(name[0])
 			batchOrders()
 		else:
 			runSecurities()

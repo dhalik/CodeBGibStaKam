@@ -7,7 +7,7 @@ stocksTableName = 'stocks'
 transactionsTableName = 'transactions'
 ordersTableName = 'orders'
 
-def connectToDB():	
+def connectToDB():
 	conn = sqlite3.connect(dbName)
 	conn.text_factory = str
 	c = conn.cursor()
@@ -21,7 +21,7 @@ def connectToDB():
 	c.execute("CREATE TABLE IF NOT EXISTS " + ordersTableName + "(type text, period integer, ticker text,  price double, shares integer)")
 	# Save (commit) the changes
 	conn.commit()
-	
+
 
 def getStockInfoForTicker(ticker):
 	conn = sqlite3.connect(dbName)
@@ -72,7 +72,7 @@ def getMostRecentPeriods(ticker, period2, period):
 	conn = sqlite3.connect(dbName)
 	params = (ticker, period2, period,)
 	c = conn.cursor()
-	c.execute("SELECT period, networth FROM " + stocksTableName + " WHERE ticker=? " 
+	c.execute("SELECT period, networth FROM " + stocksTableName + " WHERE ticker=? "
 		+ "AND period >= ? AND period <= ? ORDER BY period ASC", params)
 	conn.close()
 	return c
