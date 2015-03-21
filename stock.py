@@ -25,13 +25,13 @@ class Stock:
 		#SlopeChange = (a,b) where a is the current bid slope and b is a bool determining if the slope changed
 		self.bidSlopeChange = (0,False)
 		self.askSlopeChange = (0,False)
-
+		self.netWorthSlopeChange = (0,False)
 		self.bidAvg=[]
 		self.askAvg=[]
 
 		self.bidSlope = []
 		self.askSlope = []
-
+		self.netWorthSlope = []
 
 		self.PurchaseHistory = []
 		self.Earnings = []
@@ -40,6 +40,7 @@ class Stock:
 		self.Vol = []
 		self.Dividends = []
 		self.Price = []
+		self.NetWorth=[]
 
 	def buyStock(self, amount, price, time):
 		self.shares = self.shares+amount
@@ -58,6 +59,7 @@ class Stock:
 		if (len(ask) > 0):
 			self.askAvg.append(sum(ask)/len(ask))
 
+
 	def addBidAskSlope(self):
 		if (len(self.bidAvg) >= self.MAPeriod):
 			slope = (self.bidAvg[-1] - self.bidAvg[-self.MAPeriod])/self.MAPeriod
@@ -66,9 +68,16 @@ class Stock:
 			slope = (self.askAvg[-1] - self.askAvg[-self.MAPeriod])/self.MAPeriod
 			self.askSlope.append(slope)
 
+	def addNetWorthSlope(self):
+		if(len(self.NetWorth) >= 3):
+			slope = (self.NetWorth[-1] - self.NetWorth[-3])/3
+			self.netWorthSlope.append(slope)
+
 	def updateSlopeTuples(self):
 		bidChange = False
 		askChange = False
+		netWorthSlopeChange = False
+
 		if (len(self.bidSlope) >=2):
 			if ((self.bidSlope[-1] > 0 and self.bidSlope[-2] < 0) or (self.bidSlope[-1] < 0 and self.bidSlope[-2] > 0)):
 				bidChange = True
@@ -78,21 +87,28 @@ class Stock:
 				askChange = True
 			self.askSlopeChange = (self.askSlope[-1], askChange)
 
+		if(len(self.netWorthSlope) >= 2):
+			if ((self.netWorthSlope[-1] > 0 and self.netWorthSlope[-2] < 0) or (self.netWorthSlope[-1] < 0 and self.netWorthSlope[-2] > 0)):
+				netWorthSlopeChange = True
+			self.netWorthSlopeChange = (self.netWorthSlope[-1], netWorthSlopeChange)
+
 	#num:price, earnings, divRatio, MVPS, vol, div
 	#list: bid, ask
-	def addTick(self, price, earnings, divRatio, MVPS, vol, div, bid, ask):
+	def addTick(self, price, networth, earnings, divRatio, MVPS, vol, div, bid, ask):
 		if price != '':
-			self.Price.append(price);
+			self.Price.append(price)
 		if earnings != '':
-			self.Earnings.append(earnings);
+			self.Earnings.append(earnings)
 		if divRatio != '':
-			self.DivRatio.append(divRatio);
+			self.DivRatio.append(divRatio)
 		if MVPS != '':
 			self.MVPS.append(MVPS);
 		if vol != '':
-			self.Vol.append(vol);
+			self.Vol.append(vol)
 		if div != '':
-			self.Dividends.append(div);
+			self.Dividends.append(div)
+		if networth != '':
+			self.NetWorth.append(networth)
 
 		if (len(bid) != 0):
 			bid.remove(min(bid))
@@ -102,8 +118,10 @@ class Stock:
 
 		self.addBidAskPrice(bid,ask)
 		self.addBidAskSlope()
+		self.addNetWorthSlope()
 
 		self.updateSlopeTuples()
+
 
 	#Assuming we have div calculated
 	def calcEarnings(self, div, divRatio):
@@ -160,10 +178,10 @@ class Stock:
 
 if __name__ == "__main__":
 	AAPL = Stock('AAPL');
-	AAPL.addTick(0,1,2,3,4,'',[-10,-9,-8],[10,9,8])
-	AAPL.addTick(0,1,2,3,4,'',[-7,-6,-5],[7,6,5])
-	AAPL.addTick(0,1,2,3,4,'',[-4,-3,-2],[4,3,2])
-	AAPL.addTick(0,1,2,3,4,'',[-10,-11,-12],[10,11,12])
+	AAPL.addTick(0,123123,1,2,3,4,'',[-10,-9,-8],[10,9,8])
+	AAPL.addTick(0,999,1,2,3,4,'',[-7,-6,-5],[7,6,5])
+	AAPL.addTick(0,4,1,2,3,4,'',[-4,-3,-2],[4,3,2])
+	AAPL.addTick(0,45644897,1,2,3,4,'',[-10,-11,-12],[10,11,12])
 	#AAPL.addTick(0,1,2,3,4,'',[11,12,13],[1,2,3])
 	print AAPL.Earnings
 	print AAPL.DivRatio
