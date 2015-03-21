@@ -1,0 +1,70 @@
+import clientpy2
+import thread
+import threading
+import socket
+import sys
+import time
+import SQLService
+
+threadRunning = False
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+class subscriberThread (threading.Thread):
+    def __init__(self, threadID, name, counter):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+    def run(self):
+    	subscribe("Good_Biddies","asdfghjkl",1)
+
+threadSubscribe = subscriberThread(1, "Thread-1", 5)
+
+def subscribe(user, password, delay):
+	print("subscribe")
+	global threadRunning
+	global sock
+	HOST, PORT = "codebb.cloudapp.net", 17429
+    
+	data=user + " " + password + "\nSUBSCRIBE\n"
+
+	sock.connect((HOST, PORT))
+	sock.sendall(data)
+
+	print(threadRunning)
+	while threadRunning:
+		time.sleep(delay)
+		if not threadRunning:
+			thread.exit() 
+			sock.close()
+
+		try:
+			sfile = sock.makefile()
+			rline = sfile.readline()
+			while rline:
+				outputData = rline.strip()
+				print(outputData)
+				#Save outputData to database here
+				
+				rline = sfile.readline()
+		finally:
+
+def unsubscribeToUpdates():
+	global threadRunning
+	threadRunning = False
+
+def subscribeToUpdates():
+	try:
+		global threadRunning
+		threadRunning = True
+		print(threadRunning)
+		threadSubscribe.start()
+   		# thread.start_new_thread( subscribe, ("Good_Biddies","asdfghjkl",0.1,) )
+	except:
+		print "Error: unable to start thread"
+	
+subscribeToUpdates()
+
+# while 1:
+#    pass
