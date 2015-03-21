@@ -22,7 +22,6 @@ class subscriberThread (threading.Thread):
 threadSubscribe = subscriberThread(1, "Thread-1", 5)
 
 def subscribe(user, password, delay):
-	print("subscribe")
 	global threadRunning
 	global sock
 	HOST, PORT = "codebb.cloudapp.net", 17429
@@ -32,7 +31,6 @@ def subscribe(user, password, delay):
 	sock.connect((HOST, PORT))
 	sock.sendall(data)
 
-	print(threadRunning)
 	while threadRunning:
 		time.sleep(delay)
 		if not threadRunning:
@@ -46,6 +44,7 @@ def subscribe(user, password, delay):
 				outputData = rline.strip()
 				#Save outputData to database here
 				params = outputData.split(' ');
+				print(params)
 				#Replace 0 with proper global period count later
 				if len(params) == 4:
 					SQLService.insertTransaction(params[0],0,params[1],params[2],params[3])
@@ -61,7 +60,6 @@ def subscribeToUpdates():
 	try:
 		global threadRunning
 		threadRunning = True
-		print(threadRunning)
 		threadSubscribe.start()
 	except:
 		print "Error: unable to start thread"
