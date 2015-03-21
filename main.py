@@ -17,29 +17,29 @@ TWTR_TICKER = 'TWTR'
 XOM_TICKER = 'XOM'
 
 def runOrder(ticker):
- 	val = Action(ActionType.ORDERS, ticker).run()
+	val = Action(ActionType.ORDERS, ticker).run()
 	transType = "BID"
 	tickers = val["TICKER"]
 	price= val["BID_PRICE"]
 	quantity= val["BID_QUANTITY"]
-    for transType,tickers, price, quantity in zip(transType,tickers, price, quantity):
-        SQLService.insertOrder(transType, period, tickers, price, quantity) 
- 	
- 	transType = "ASK"
-    tickers = val["TICKER"]
-    price= val["ASK_PRICE"]
-    quantity= val["ASK_QUANTITY"]
-    for transType,tickers, price, quantity in zip(transType,tickers, price, quantity):
-        SQLService.insertOrder(transType, period, tickers, price, quantity) 
-	
+	for transType,tickers, price, quantity in zip(transType,tickers, price, quantity):
+		SQLService.insertOrder(transType, period, tickers, price, quantity)
+
+	transType = "ASK"
+	tickers = val["TICKER"]
+	price= val["ASK_PRICE"]
+	quantity= val["ASK_QUANTITY"]
+	for transType,tickers, price, quantity in zip(transType,tickers, price, quantity):
+		SQLService.insertOrder(transType, period, tickers, price, quantity)
+
 def runSecurities():
 	val = Action(ActionType.SECURITIES).run()
-	    tickers = val["TICKER"]
-	    nws= val["NET_WORTH"]
-	    drs= val["DIV_RATIO"]
-	    vols= val["VOL"]
-	    for tick, nw, dr, vol in zip(tickers, nws, drs, vols):
-	        SQLService.insertStock(period, tick, nw, dr, vol)
+	tickers = val["TICKER"]
+	nws= val["NET_WORTH"]
+	drs= val["DIV_RATIO"]
+	vols= val["VOL"]
+	for tick, nw, dr, vol in zip(tickers, nws, drs, vols):
+		SQLService.insertStock(period, tick, nw, dr, vol)
 
 if (__name__ == "__main__"):
 	SQLService.connectToDB()
@@ -55,6 +55,6 @@ if (__name__ == "__main__"):
 		runOrder(TSLA_TICKER)
 		runOrder(TWTR_TICKER)
 		runOrder(XOM_TICKER)
-	    time.sleep(1)
-	    period = period + 1
+		time.sleep(1)
+		period = period + 1
 
