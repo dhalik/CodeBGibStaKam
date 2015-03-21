@@ -1,10 +1,38 @@
+NOTES:
+
+-Start by waiting 6-7 ticks OR bid-ask spread is smaller 
+
+-When bids are decreasing, don't buy. When we see the slope now increasing, buy
+	-When 3 period moving average goes from negative to positive
+
+-Try to estimate dividends: Get next period earnings from Volatility
+	-Constantly record decrease in dividend given and try to find distribution
+	-Want decreasing flat slope stock so we get most dividends and earnigns are good
+
+-Using volatility distribution
+	-Less volatile distribution when earnings are high should give good dividends
+
+-See how much one person can push the bid ask price by buying a lot of one thing 
+	-OR rotate buying a different stock , holding and selling over and over again
+
+
+-Similar on ASK side
+
+-Look for free negative bid arbitrage
+	-Buy for 1-5 cents higher, next period sell for 1-5 cent higher
+
 
 Start of Contest
+
+
+
 
 start of period
 	if period == 1
 		 Wait a couple of ticks(3-5) to allow others to take the hit for buying the largest spread first
 	else
 		Run the securities command and record data into DataBase and Memory as Stock Class
-		Run algorithm 
+
+	if period == 2
+		Look at what other people BID, important since first stab at exchange
 	
