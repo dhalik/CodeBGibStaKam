@@ -67,15 +67,14 @@ class Action:
 					e["ASK_PRICE"].append(float(tokens[i * 4 + 3]))
 					e["ASK_QUANTITY"].append(float(tokens[i*4 + 4]))
 		elif (tokens[0] == "BID_OUT"):
-			print "LOG: BID PLACED: " + self._command
+			pass
 		elif (tokens[0] == "ASK_OUT"):
-			print "LOG: ASK PLACED: " + self._command
+			pass
 		elif (tokens[0] == "CLEAR_BID_OUT"):
-			print "LOG: BID CLEARED: " + self._command
+			pass
 		elif (tokens[0] == "CLEAR_ASK_OUT"):
-			print "LOG: ASK CLEARED: " + self._command
+			pass
 		elif (tokens[0] == "ERROR"):
-			print "LOG: ERROR: " + retVal
 			raise ValueError("Error raised");
 		else:
 			print "Unhandled Type: " + retVal
@@ -100,9 +99,7 @@ class Action:
 
 	def run(self):
 		self.checkParams()
-		print "LOG: executing " + self._command
 		self._got = clientpy2.run("Good_Biddies", "asdfghjkl", self._command)
-		print "LOG: returned " + self._got
 		return self.parse(self._got)
 
 	def __repr__(self):
