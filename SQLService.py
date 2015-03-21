@@ -35,6 +35,7 @@ def getStockInfoForQuery(query):
 	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute(query)
+	print c.fetchall()
 	conn.commit()
 	conn.close()
 
