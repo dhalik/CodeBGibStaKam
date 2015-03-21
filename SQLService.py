@@ -61,14 +61,14 @@ def insertTransaction(transType, period, ticker, price, shares):
 	conn = sqlite3.connect(dbName)
 	c = conn.cursor()
 	c.execute("INSERT INTO " + transactionsTableName 
-		+ " VALUES ('" + str(transType) + str(period) + "','" + str(ticker) + "','" + str(price) +"','"+ str(shares) + "')")
+		+ " VALUES ('" + str(transType) + "','" + str(period) + "','" + str(ticker) + "','" + str(price) +"','"+ str(shares) + "')")
 	conn.commit()
 	conn.close()
 
 connectToDB()
 insertStock(1,"APPL",100.01,0.001,0.5)
 insertStock(2,"APPL",200.01,0.2,0.10)
-insertTransaction(1,"APPL",200.01,100)
+insertTransaction("BUY",1,"APPL",200.01,100)
 getStockInfoForTicker("APPL")
 getAllTransactions()
 

@@ -1,3 +1,5 @@
+import scipy.stats as stats
+
 class Stock:    
     def __init__(self, ticker):
         self.ticker = ticker
@@ -43,8 +45,12 @@ class Stock:
         return earnings
 
     def calcNextEarning(self, volatility, currentEarnings):
-        earnings = currentEarnings/(1+volatility)
-        return earnings
+        try:
+            earnings = currentEarnings/(1+volatility)
+            return earnings
+        except ZeroDivisionError:
+            print "Zero Division: failed to calculate Next earnings"
+            
     
     def calcTotalShares(self):
         pass
@@ -58,5 +64,6 @@ if __name__ == "__main__":
     print AAPL.MVPS
     print AAPL.Vol
     print AAPL.Dividends
-    
+
+
     
