@@ -20,6 +20,7 @@ import math
 class Stock:
 	def __init__(self, ticker):
 		self.ticker = ticker
+		self.lock = 0
 		self.MAPeriod = 7;
 		self.outstandingShares=0
 		self.shares = 0
@@ -47,12 +48,15 @@ class Stock:
 		self.NetWorth=[]
 
 	def buyStock(self, amount, price, time):
-		self.shares = self.shares+amount
-		self.PurchaseHistory.append(['Buy',time,amount,price])
-		Action.Action(ActionType.ActionType.BID, self.ticker + " " + str(price) + " 10" ).run()
+		print "lock is: " + str(self.lock)
+		if (self.lock <= 0):
+			self.shares = self.shares+amount
+			self.PurchaseHistory.append(['Buy',time,amount,price])
+			Action.Action(ActionType.ActionType.BID, self.ticker + " " + str(price) + " 15" ).run()
 
 	def sellStock(self, amount, price, time):
 		price -= 0.005
+		self.lock = 30;
 		secs = Action.Action(ActionType.ActionType.MY_SECS).run()
 		quant = 0;
 		for i in range(0,len(secs["TICKER"])):
@@ -60,7 +64,7 @@ class Stock:
 				# I knw this says price, but its actually quantity!
 				quant = secs["PRICE"][i];
 		self.PurchaseHistory.append(['Sell', time, amount, price])
-		Action.Action(ActionType.ActionType.ASK, self.ticker + " " + str(price) + " " + str(int(math.ceil(quant/2)))).run()
+		Action.Action(ActionType.ActionType.ASK, self.ticker + " " + str(price) + " " + str(int(quant))).run()
 		self.divRatio = 0;
 
 	def currentValueOfPosition(self, currentMarketPrice):
@@ -108,6 +112,7 @@ class Stock:
 	#num:price, earnings, divRatio, MVPS, vol, div
 	#list: bid, ask
 	def addTick(self, price, networth, earnings, divRatio, MVPS, vol, div, bid, ask):
+		self.lock -= 1;
 		if price != '':
 			self.Price.append(price)
 		if earnings != '':
@@ -128,7 +133,7 @@ class Stock:
 		if (len(ask) !=0):
 			ask.remove(max(ask))
 
-		if (divRatio > 0 and divRatio < 0.001):
+		if (divRatio > 0 and divRatio < 0.0005):
 			if (len(bid) != 0):
 				self.sellStock(0,max(bid),1)
 

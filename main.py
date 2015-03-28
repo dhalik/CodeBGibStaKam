@@ -50,7 +50,7 @@ def runSecurities():
 		drDict[tick] = dr;
 
 	for tick, nw, dr, vol in zip(tickers, nws, drs, vols):
-		SQLService.insertStock(period, tick, nw, dr, vol)
+		#SQLService.insertStock(period, tick, nw, dr, vol)
 		if (tick in stockList):
 			spread = runOrder(tick)
 			if (len(spread[0]) > 0 and len(spread[1]) > 0):
